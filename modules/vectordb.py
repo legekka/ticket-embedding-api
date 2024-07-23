@@ -7,19 +7,19 @@ class VectorDB:
 
     def create_database(self, dimension):
         self.index = faiss.IndexFlatL2(dimension)
-        self.name = [] # this will store the identification names for the indexes
-
-    def add(self, name, vector):
-        # check if name already exists
-        if name in self.name:
-            return "Name already exists."
-        vector = np.array([vector], dtype=np.float32)
-        # check if vector already exists
-        D, I = self.index.search(vector, 1)
-        if D[0][0] == 0:
-            return "Vector already exists."
+        self.name = []
         
-        # check if vector is of the correct dimension
+    def add(self, name, vector):
+        if len(self.name) > 0 and name in self.name:
+            return "Name already exists."
+        vector = np.array(vector, dtype=np.float32)
+        if len(vector.shape) == 1:
+            vector = np.array([vector])
+
+        # D, I = self.index.search(vector, 1)
+        # if D[0][0] == 0:
+        #     return "Vector already exists."
+
         if vector.shape[1] != self.index.d:
             return "Vector dimension does not match database dimension."
         
@@ -56,9 +56,13 @@ class VectorDB:
 
     def save(self, path):
         faiss.write_index(self.index, path)
+        with open(path + ".names", "w") as f:
+            f.write("\n".join(self.name))
 
     def load(self, path):
         self.index = faiss.read_index(path)
+        with open(path + ".names", "r") as f:
+            self.name = f.read().split("\n")
     
     def __len__(self):
         return self.index.ntotal
