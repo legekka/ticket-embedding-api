@@ -34,6 +34,11 @@ def delete_database(db_name: str):
     manager.delete_database(db_name)
     return JSONResponse(status_code=200, content={"message": "Database deleted."})
 
+@app.post("/save_databases")
+def save_databases():
+    manager.save_databases()
+    return JSONResponse(status_code=200, content={"message": "Databases saved."})
+
 @app.post("/add")
 async def add(db_name: str, request: Request):
     # ticketId and the vector will be in a json in the request body

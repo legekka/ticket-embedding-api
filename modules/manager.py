@@ -30,12 +30,10 @@ class Manager:
 
     def add(self, db_name, name, vector):
         result = self.databases[db_name].add(name, vector)
-        self.save_databases()
         return result
     
     def remove(self, db_name, name=None, vector=None):
         result = self.databases[db_name].remove(name, vector)
-        self.save_databases()
         return result
 
     def search(self, db_name, query_vector, k):
