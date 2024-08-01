@@ -2,7 +2,6 @@ import os
 import time
 
 import torch
-import tqdm
 import numpy as np
 
 from transformers import AutoTokenizer, AutoModel
@@ -29,8 +28,7 @@ class EmbeddingModel:
     def get_cls_embeddings(self, sentences):
         all_embeddings = []
         if self.batch_size != -1:
-            loop = tqdm.tqdm(range(0, len(sentences), self.batch_size), desc="Processing batches")
-            for i in loop:
+            for i in range(0, len(sentences), self.batch_size):
                 start_time = time.time()
                 if self.batch_size != -1:
                     batch = sentences[i:i + self.batch_size]
@@ -51,10 +49,8 @@ class EmbeddingModel:
                     hidden_states = outputs.hidden_states
                     cls_embeddings = hidden_states[-1][:, 0, :].detach().cpu().numpy()
                     all_embeddings.append(cls_embeddings)
-
-                loop.set_description("Processing sentences | {:.2f} embeddings/s".format(len(batch) / (time.time() - start_time)))
         else:
-            for sentence in tqdm.tqdm(sentences, desc="Processing sentences"):
+            for sentence in sentences:
                 tokens = self.tokenizer(
                     text=sentence,
                     truncation=True,

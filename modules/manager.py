@@ -40,7 +40,11 @@ class Manager:
         return result
 
     def search(self, db_name, query_vector, k):
-        return self.databases[db_name].search(query_vector, k)
+        result = self.databases[db_name].search(query_vector, k)
+        # iter through result and convert all distance property number to string
+        for res in result:
+            res["distance"] = str(res["distance"])
+        return result
     
     def search_text(self, db_name, query_text, k):
         query_vector = self.model.get_cls_embeddings([query_text])[0]
