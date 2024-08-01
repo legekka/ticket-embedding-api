@@ -12,6 +12,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         libpng-dev python3-pip python${PYTHON_VERSION} && \
     rm -rf /var/lib/apt/lists/*
 
+
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
 RUN adduser --no-create-home --home /opt/aiops aiops
 RUN mkdir -p /opt/aiops; chown aiops:aiops /opt/aiops
 

@@ -2,11 +2,14 @@ import os
 
 from modules.vectordb import VectorDB
 from modules.config import Config
+from modules.model import EmbeddingModel
 
 class Manager:
     def __init__(self, db_path, config_file):
         self.db_path = db_path
         self.config = Config(config_file)
+        self.model = EmbeddingModel("NYTK/PULI-BERT-Large")
+        print("Model loaded.")
         self.databases = {}
         if len(self.config.databases) > 0:
             self.load_databases()
@@ -38,6 +41,10 @@ class Manager:
 
     def search(self, db_name, query_vector, k):
         return self.databases[db_name].search(query_vector, k)
+    
+    def search_text(self, db_name, query_text, k):
+        query_vector = self.model.get_cls_embeddings([query_text])[0]
+        return self.search(db_name, query_vector, k)
     
     def delete_database(self, db_name):
         del self.databases[db_name]

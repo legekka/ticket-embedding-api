@@ -18,7 +18,7 @@ def read_root():
 
 @app.get("/list_databases")
 def list_databases():
-    return manager.list_databases()
+    return JSONResponse(status_code=200, content=manager.list_databases())
 
 @app.post("/create_database")
 def create_database(db_name: str, dimension: int):
@@ -80,4 +80,16 @@ async def search(db_name: str, request: Request):
         return JSONResponse(status_code=400, content={"error": "Vector should be provided."})
     if db_name not in manager.list_databases():
         return JSONResponse(status_code=404, content={"error": "Database not found."})
-    return manager.search(db_name, query_vector, k)
+    return JSONResponse(status_code=200, content=manager.search(db_name, query_vector, k))
+
+@app.post("/search_text")
+async def search_text(db_name: str, request: Request):
+    data = await request.json()
+    query_text = data.get("text") if data.get("text") else None
+    k = data.get("k") if data.get("k") else 5
+
+    if query_text is None:
+        return JSONResponse(status_code=400, content={"error": "Vector should be provided."})
+    if db_name not in manager.list_databases():
+        return JSONResponse(status_code=404, content={"error": "Database not found."})
+    return JSONResponse(status_code=200, content=manager.search_text(db_name, query_text, k))
