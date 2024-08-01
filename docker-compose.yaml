@@ -1,0 +1,12 @@
+services:
+  ticket-embedding-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8000
+    volumes:
+      - /opt/projects/ticket-embedding-api/database:/opt/aiops/database
+    environment:
+      - DB_PATH=database/
+      - DB_CONFIG=database/config.json
