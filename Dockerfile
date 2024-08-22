@@ -3,6 +3,8 @@ ARG TAG=2.4.0-cuda11.8-cudnn9-runtime
 
 FROM ${IMAGE}:${TAG} AS base
 
+RUN apt install postgresql-devel
+
 RUN adduser --no-create-home --home /opt/aiops aiops
 RUN mkdir -p /opt/aiops; chown aiops:aiops /opt/aiops
 
@@ -30,6 +32,7 @@ ENV IRISDB_PORT="${IRISDB_PORT}"
 
 ENV PATH=${PATH}:/opt/aiops/.local/bin
 RUN pip install -r requirements.txt
+
 RUN pip install psycopg2
 
 EXPOSE 8000
