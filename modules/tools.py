@@ -8,6 +8,8 @@ with open("formats/task_focus.txt", 'r') as f:
     task_focus_format = f.read() 
 
 def clean_text(text):
+    if text is None:
+        return ""
     return bleach.clean(text, strip=True).replace('&nbsp;', '').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
 
 def formatter(ticket, formatting):
