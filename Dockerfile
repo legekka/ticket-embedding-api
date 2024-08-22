@@ -3,7 +3,8 @@ ARG TAG=2.4.0-cuda11.8-cudnn9-runtime
 
 FROM ${IMAGE}:${TAG} AS base
 
-RUN apt install postgresql-devel
+RUN apt-get update \
+    && apt-get -y install libpq-dev gcc
 
 RUN adduser --no-create-home --home /opt/aiops aiops
 RUN mkdir -p /opt/aiops; chown aiops:aiops /opt/aiops
