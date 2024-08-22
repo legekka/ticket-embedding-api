@@ -3,11 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ticket-embedding-api:0.1
+    image: ticket-embedding-api:0.2
     ports:
       - 8081:8000
     volumes:
       - /opt/projects/ticket-embedding-api/database:/opt/aiops/database
-    environment:
-      - DB_PATH=database/
-      - DB_CONFIG=database/config.json
+    env_file:
+      - .env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
