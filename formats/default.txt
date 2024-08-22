@@ -1,0 +1,1 @@
+Partner: {partner} | Name: {contact} | Operation Service Level: {osl} | Type: {type} | Priority: {priority} | Support Grade: {user_grade} | Subject: {subject} | Message: {description}
