@@ -1,5 +1,6 @@
 import faiss
 import numpy as np
+import json
 
 class VectorDB:
     def __init__(self):
@@ -15,10 +16,6 @@ class VectorDB:
         vector = np.array(vector, dtype=np.float32)
         if len(vector.shape) == 1:
             vector = np.array([vector])
-
-        # D, I = self.index.search(vector, 1)
-        # if D[0][0] == 0:
-        #     return "Vector already exists."
 
         if vector.shape[1] != self.index.d:
             return "Vector dimension does not match database dimension."
@@ -56,13 +53,13 @@ class VectorDB:
 
     def save(self, path):
         faiss.write_index(self.index, path)
-        with open(path + ".names", "w") as f:
-            f.write("\n".join(self.name))
+        with open(path + ".json", "w") as f:
+            json.dump(self.name, f)
 
     def load(self, path):
         self.index = faiss.read_index(path)
-        with open(path + ".names", "r") as f:
-            self.name = f.read().split("\n")
+        with open(path + ".json", "r") as f:
+            self.name = json.load(f)
     
     def __len__(self):
         return self.index.ntotal
