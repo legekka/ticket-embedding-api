@@ -11,7 +11,7 @@ import tqdm
 
 class IRIS_Service:
     def __init__(self, manager: Manager):
-        self.batch_size = 32
+        self.batch_size = 1000
         self.manager = manager
 
         if "iris_default" not in self.manager.databases:
@@ -48,6 +48,6 @@ class IRIS_Service:
 
             new_ticket_count += len(batch)
 
-        self.manager.save_databases()
+            self.manager.save_databases()
 
         return new_ticket_count
