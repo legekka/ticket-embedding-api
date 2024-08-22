@@ -6,11 +6,14 @@ from pydantic import BaseModel
 from typing import Optional
 
 from modules.manager import Manager
+from modules.iris_service import IRIS_Service
 
 db_path = os.getenv("DB_PATH", "./database/")
 db_config = os.getenv("DB_CONFIG", "./database/config.json")
 
 manager = Manager(db_path, db_config)
+
+iris_service = IRIS_Service(manager)
 
 app = FastAPI()
 
@@ -121,3 +124,8 @@ async def search_text(db_name: str, request: Request):
     
     result = manager.search_text(db_name, query_text, k)
     return JSONResponse(status_code=200, content=result)
+
+@app.post("/sync_new_tickets")
+def sync_new_tickets():
+    new_tickets_count = iris_service.sync_new_tickets()
+    return JSONResponse(status_code=200, content={"message": f"{new_tickets_count} new tickets synced."})
