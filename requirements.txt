@@ -1,3 +1,6 @@
 fastapi
 faiss-cpu
 transformers
+bleach
+peewee
+# psycopg2 (install manually after peewee)
