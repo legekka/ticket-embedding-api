@@ -29,7 +29,6 @@ class EmbeddingModel:
         all_embeddings = []
         if self.batch_size != -1:
             for i in range(0, len(sentences), self.batch_size):
-                start_time = time.time()
                 if self.batch_size != -1:
                     batch = sentences[i:i + self.batch_size]
                 else:
