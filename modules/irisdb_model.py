@@ -119,7 +119,6 @@ def get_tickets():
         .join(User, on=(Ticket.resolver_id == User.id))
         .join(UserGrade, on=(User.user_grade_id == UserGrade.id))
         .where(Ticket.ticket_state_id == 'SYS_10')
-        .limit(1000)
         .dicts()
         .iterator()
     )
