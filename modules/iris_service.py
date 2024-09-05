@@ -6,7 +6,7 @@ from modules.manager import Manager
 from modules.irisdb_model import get_tickets
 from modules.tools import clean_text, formatter
 
-
+import time
 import tqdm
 
 class IRIS_Service:
@@ -21,9 +21,13 @@ class IRIS_Service:
             self.manager.create_database("iris_task_focus", 1024)
 
     def sync_new_tickets(self):
+        last_sync_date = self.manager.config.last_sync_date
         new_ticket_count = 0
-        tickets = get_tickets()
+        tickets = get_tickets(last_sync_date)
         tickets = list(tickets)
+
+        self.manager.config.last_sync_date = time.strftime("%Y-%m-%d %H:%M:%S")
+        self.manager.config.save_config()
 
         for i in tqdm.tqdm(range(0, len(tickets), self.batch_size)):
             batch = tickets[i:i+self.batch_size]
