@@ -19,6 +19,8 @@ ARG DB_PATH="/opt/aiops/database"
 ENV DB_PATH="${DB_PATH}"
 ARG DB_CONFIG="/opt/aiops/database/config.json"
 ENV DB_CONFIG="${DB_CONFIG}"
+ARG HFMODEL="NYTK/PULI-BERT-Large"
+ENV HFMODEL="${HFMODEL}"
 
 ARG IRISDB_NAME="irisdb"
 ENV IRISDB_NAME="${IRISDB_NAME}"

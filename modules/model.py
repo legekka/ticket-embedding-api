@@ -17,15 +17,34 @@ class EmbeddingModel:
         self.model = AutoModel.from_pretrained(model_name).to(device)
         self.model.eval()
 
+        self.max_length = self.model.config.max_position_embeddings
+
         if device == "cuda":
             self.model = self.model.half()
             self.batch_size = 32
         else:
             self.batch_size = -1
         torch.cuda.empty_cache()
-    
-        
-    def get_cls_embeddings(self, sentences):
+
+    def tokenize_text(self, examples):
+        inputs = self.tokenizer(
+            text=examples["text"],
+            padding="max_length",
+            truncation=True,
+            max_length=self.max_length,
+            return_tensors="pt"
+        )
+        return inputs
+
+    def get_cls_embeddings_from_inputs(self, inputs):
+        with torch.no_grad():
+            inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+            outputs = self.model(**inputs, output_hidden_states=True)
+            hidden_states = outputs.hidden_states
+            cls_embeddings = hidden_states[-1][:, 0, :].detach().cpu().numpy()
+        return cls_embeddings 
+
+    def get_cls_embeddings_from_text(self, sentences):
         all_embeddings = []
         if self.batch_size != -1:
             for i in range(0, len(sentences), self.batch_size):
@@ -38,7 +57,7 @@ class EmbeddingModel:
                     text=batch,
                     truncation=True,
                     padding="max_length" if self.batch_size != -1 else False,
-                    max_length=512,
+                    max_length=self.max_length,
                     return_tensors="pt"
                 )
                 tokens = {k: v.to(self.model.device) for k, v in tokens.items()}
@@ -54,7 +73,7 @@ class EmbeddingModel:
                     text=sentence,
                     truncation=True,
                     padding="max_length",
-                    max_length=512,
+                    max_length=self.max_length,
                     return_tensors="pt"
                 )
                 tokens = {k: v.to(self.model.device) for k, v in tokens.items()}

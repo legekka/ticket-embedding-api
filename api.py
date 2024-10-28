@@ -10,8 +10,13 @@ from modules.iris_service import IRIS_Service
 
 db_path = os.getenv("DB_PATH", "./database/")
 db_config = os.getenv("DB_CONFIG", "./database/config.json")
+hfmodel = os.getenv("HFMODEL", "NYTK/PULI-BERT-Large")
 
-manager = Manager(db_path, db_config)
+print("DB_PATH:", db_path)
+print("DB_CONFIG:", db_config)
+print("HFMODEL:", hfmodel)
+
+manager = Manager(db_path, db_config, hfmodel)
 
 iris_service = IRIS_Service(manager)
 

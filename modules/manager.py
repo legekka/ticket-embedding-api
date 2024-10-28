@@ -5,10 +5,11 @@ from modules.config import Config
 from modules.model import EmbeddingModel
 
 class Manager:
-    def __init__(self, db_path, config_file):
+    def __init__(self, db_path, config_file, hf_model):
         self.db_path = db_path
         self.config = Config(config_file)
-        self.model = EmbeddingModel("NYTK/PULI-BERT-Large")
+        self.model = EmbeddingModel(hf_model)
+        self.dimension = self.model.model.config.hidden_size
         print("Model loaded.")
         self.databases = {}
         if len(self.config.databases) > 0:
@@ -47,7 +48,7 @@ class Manager:
         return result
     
     def search_text(self, db_name, query_text, k):
-        query_vector = self.model.get_cls_embeddings([query_text])[0]
+        query_vector = self.model.get_cls_embeddings_from_text([query_text])[0]
         return self.search(db_name, query_vector, k)
     
     def delete_database(self, db_name):
