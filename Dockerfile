@@ -36,7 +36,5 @@ ENV IRISDB_PORT="${IRISDB_PORT}"
 ENV PATH=${PATH}:/opt/aiops/.local/bin
 RUN pip install -r requirements.txt
 
-RUN pip install psycopg2
-
 EXPOSE 8000
 CMD fastapi run api.py

@@ -4,4 +4,4 @@ transformers
 datasets
 bleach
 peewee
-# psycopg2 (install manually after peewee)
+psycopg2-binary
