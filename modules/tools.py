@@ -1,5 +1,4 @@
 import bleach
-import os
 
 
 with open("formats/default.txt", 'r') as f:
