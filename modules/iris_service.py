@@ -8,6 +8,7 @@ from modules.tools import clean_text, formatter
 
 from datasets import Dataset
 from torch.utils.data import DataLoader
+import torch
 
 import time
 import tqdm
@@ -75,5 +76,7 @@ class IRIS_Service:
         print("Synced", new_ticket_count, "new tickets.")
         self.manager.config.last_sync_date = request_time
         self.manager.config.save_config()
+
+        torch.cuda.empty_cache()
         
         return new_ticket_count
