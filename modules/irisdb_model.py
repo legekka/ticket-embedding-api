@@ -152,3 +152,19 @@ def get_tickets(last_sync_date=None):
         )
 
     return tickets
+
+def get_ticket_times(ticket_ids):
+    tickets = (
+        Ticket.select(
+            Ticket.id.alias("ticket_id"),
+            WorkLog.public_spent_time.alias("active_spent_time"),
+            WorkLog.spent_time.alias("inactive_spent_time")
+        )
+        .join(WorkLog, on=(Ticket.id == WorkLog.ticket_id))
+        .where(Ticket.id.in_(ticket_ids))
+        .dicts()
+    )
+
+    tickets = list(tickets)
+
+    return tickets

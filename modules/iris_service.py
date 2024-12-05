@@ -3,7 +3,7 @@ from modules.config import Config
 from modules.model import EmbeddingModel
 from modules.manager import Manager
 
-from modules.irisdb_model import get_tickets
+from modules.irisdb_model import get_tickets, get_ticket_times
 from modules.tools import clean_text, formatter
 
 from datasets import Dataset
@@ -80,3 +80,41 @@ class IRIS_Service:
         torch.cuda.empty_cache()
         
         return new_ticket_count
+    
+    def predict_spent_time(self, text: str, db_name: str):
+        # get relevant tickets first
+        tickets_with_distance = self.manager.search_text(db_name, text, 6)
+        ticket_ids = [t["name"] for t in tickets_with_distance]
+
+        # get ticket active_spent_time and inactive_spent_time from IRIS database
+        tickets = get_ticket_times(ticket_ids)
+
+        # group tickets by ticket_id by summing the active_spent_time and inactive_spent_time
+        tickets_grouped = {}
+        for ticket in tickets:
+            if ticket["ticket_id"] in tickets_grouped:
+                tickets_grouped[ticket["ticket_id"]]["active_spent_time"] += ticket["active_spent_time"]
+                tickets_grouped[ticket["ticket_id"]]["inactive_spent_time"] += ticket["inactive_spent_time"]
+            else:
+                tickets_grouped[ticket["ticket_id"]] = ticket
+
+        tickets = list(tickets_grouped.values())
+
+        # add the normalized distance to the tickets where name == ticket_id
+        for ticket in tickets:
+            ticket["total_spent_time"] = ticket["active_spent_time"] + ticket["inactive_spent_time"]
+            for res in tickets_with_distance:
+                if ticket["ticket_id"] == res["name"]:
+                    ticket["distance"] = res["distance"]
+
+        # sort the tickets by distance
+        tickets = sorted(tickets, key=lambda x: x["distance"])
+
+        try:
+            result = tickets[0]["total_spent_time"]
+        except:
+            return 1
+        
+        rounded_result = round(result * 4) / 4
+
+        return rounded_result

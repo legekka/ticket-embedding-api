@@ -134,3 +134,22 @@ async def search_text(db_name: str, request: Request):
 def sync_new_tickets():
     new_tickets_count = iris_service.sync_new_tickets()
     return JSONResponse(status_code=200, content={"message": f"{new_tickets_count} new tickets synced."})
+
+class PredictSpentTimeRequest(BaseModel):
+    text: str
+
+@app.post("/predict_spent_time", response_model=PredictSpentTimeRequest)
+async def predict_spent_time(db_name: str, request: Request):
+    data = await request.json()
+    text = data.get("text") if data.get("text") else None
+
+    if text is None:
+        raise HTTPException(status_code=400, detail="Query Text should be provided.")
+    if db_name not in manager.list_databases():
+        raise HTTPException(status_code=404, detail="Database not found.")
+
+    predicted_time = iris_service.predict_spent_time(text, db_name)
+
+    return JSONResponse(status_code=200, content={
+        "predicted_time": predicted_time
+    })

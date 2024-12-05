@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ticket-embedding-api:0.3-cuda
+    image: ticket-embedding-api:0.4-cuda
     ports:
       - 8081:8000
     volumes:
