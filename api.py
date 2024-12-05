@@ -132,7 +132,10 @@ async def search_text(db_name: str, request: Request):
 
 @app.post("/sync_new_tickets")
 def sync_new_tickets():
-    new_tickets_count = iris_service.sync_new_tickets()
+    if iris_service.sync_running:
+        raise HTTPException(status_code=400, detail="Sync already running.")
+    else:
+        new_tickets_count = iris_service.sync_new_tickets()
     return JSONResponse(status_code=200, content={"message": f"{new_tickets_count} new tickets synced."})
 
 class PredictSpentTimeRequest(BaseModel):

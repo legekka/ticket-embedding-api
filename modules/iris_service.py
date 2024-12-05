@@ -17,6 +17,7 @@ class IRIS_Service:
     def __init__(self, manager: Manager):
         self.batch_size = 1000
         self.manager = manager
+        self.sync_running = False
 
         if "iris_default" not in self.manager.databases:
             self.manager.create_database("iris_default", self.manager.dimension)
@@ -26,6 +27,8 @@ class IRIS_Service:
 
     def sync_new_tickets(self):
         print("Syncing new tickets from IRIS database...")
+        self.sync_running = True
+
         last_sync_date = self.manager.config.last_sync_date
         new_ticket_count = 0
         request_time = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -78,7 +81,8 @@ class IRIS_Service:
         self.manager.config.save_config()
 
         torch.cuda.empty_cache()
-        
+
+        self.sync_running = False
         return new_ticket_count
     
     def predict_spent_time(self, text: str, db_name: str):
